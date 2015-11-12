@@ -20,7 +20,6 @@ for i in $(seq 1 1 ${DS9_STARTUP_TIMEOUT}); do
 	if [[ "$(xpaaccess Online_Preview)" == 'yes' ]]; then
 		xpaset -p Online_Preview view filename no
 		xpaset -p Online_Preview view object no
-		xpaset -p Online_Preview view wcs no
 		xpaset -p Online_Preview view physical no
 		xpaset -p Online_Preview view frame no
 		xpaset -p Online_Preview view buttons no
