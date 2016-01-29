@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+import Pyro4
+
+VAISALA_HOST = '192.168.0.102'
+VAISALA_PORT = 9001
+VAISALA_NAME = 'vaisala_daemon'
+
+ROOMALERT_HOST = '192.168.0.102'
+ROOMALERT_PORT = 9008
+ROOMALERT_NAME = 'roomalert_daemon'
+
+SUPERWASP_HOST = '192.168.0.102'
+SUPERWASP_PORT = 9007
+SUPERWASP_NAME = 'superwasp_daemon'
+
+VAISALA_URL = 'PYRO:' + VAISALA_NAME + '@' + VAISALA_HOST + ':' + str(VAISALA_PORT)
+ROOMALERT_URL = 'PYRO:' + ROOMALERT_NAME + '@' + ROOMALERT_HOST + ':' + str(ROOMALERT_PORT)
+SUPERWASP_URL = 'PYRO:' + SUPERWASP_NAME + '@' + SUPERWASP_HOST + ':' + str(SUPERWASP_PORT)
+
+try:
+    with Pyro4.Proxy(VAISALA_URL) as vaisala:
+        v = vaisala.last_measurement()
+        if v is not None:
+            print('VWINDSPD= {:.6f} / Vaisala wind speed in km/h'.format(v['wind_speed']))
+            print('VWINDDIR= {:.6f} / Vaisala wind direction in degrees'.format(v['wind_direction']))
+            print('VEXTTEMP= {:.6f} / Vaisala temperature in deg c'.format(v['temperature']))
+            print('VEXTHUMD= {:.6f} / Vaisala relative humidity in %'.format(v['relative_humidity']))
+            print('VPRESSUR= {:.6f} / Vaisala air pressure in hPa'.format(v['pressure']))
+except Exception:
+    pass
+
+try:
+    with Pyro4.Proxy(ROOMALERT_URL) as roomalert:
+        r = roomalert.last_measurement()
+        if r is not None:
+            print('DOMETEMP= {:.6f} / Dome temperature in deg c'.format(r['internal_temp']))
+            print('DOMEHUMD= {:.6f} / Dome relative humidity in %'.format(r['internal_humidity']))
+            print('TRUSTEMP= {:.6f} / Truss temperature in deg c'.format(r['truss_temp']))
+except Exception:
+    pass
+
+try:
+    with Pyro4.Proxy(SUPERWASP_URL) as superwasp:
+        s = superwasp.last_measurement()
+        if s is not None:
+            print('SKYTEMP = {:.6f} / Sky temperature in deg c'.format(s['superwasp_sky_temp']))
+            print('DEWPDELT= {:.6f} / Temperature above dew point in deg c'.format(s['superwasp_dew_point_delta']))
+except Exception:
+    pass
+
